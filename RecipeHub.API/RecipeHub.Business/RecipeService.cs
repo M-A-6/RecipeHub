@@ -84,15 +84,15 @@ namespace RecipeHub.Business
                 existingRecipe.Title = recipe.Title;
                 existingRecipe.Levels = recipe.Levels;
 
-                if (recipe.Filename1 != "")
+                if (!string.IsNullOrEmpty(recipe.Filename1))
                 {
                     existingRecipe.Filename1 = recipe.Filename1;
                 }
-                if (recipe.Filename2 != "")
+                if (!string.IsNullOrEmpty(recipe.Filename2))
                 {
                     existingRecipe.Filename2 = recipe.Filename2;
                 }
-                if (recipe.Filename3 != "")
+                if (!string.IsNullOrEmpty(recipe.Filename3))
                 {
                     existingRecipe.Filename3 = recipe.Filename3;
                 }

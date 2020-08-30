@@ -152,7 +152,8 @@ namespace RecipeHub.API.Controllers
                 if (model.File1 != null)
                 {
                     string fileExtenstion = Path.GetExtension(model.File1.FileName);
-                    string uniqueFileName = existingRecipe.Filename1 + fileExtenstion; //Guid.NewGuid().ToString() + "_" + model.File1.FileName;
+                    string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename1) ?  Path.GetFileNameWithoutExtension(existingRecipe.Filename1): DateTime.Now.ToString("yyyyMMddHHmmssfff")) 
+                                              + fileExtenstion;
                     string filepath = Path.Combine(uploadsFolder, uniqueFileName);
                     using (FileStream fileStream = System.IO.File.Create(filepath))
                     {
@@ -164,7 +165,8 @@ namespace RecipeHub.API.Controllers
                 if (model.File2 != null)
                 {
                     string fileExtenstion = Path.GetExtension(model.File2.FileName);
-                    string uniqueFileName = existingRecipe.Filename2 + fileExtenstion;//DateTime.Now.ToString("yyyyMMddHHmmssfff");  //Guid.NewGuid().ToString() + "_" + model.File2.FileName;
+                    string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename2) ? Path.GetFileNameWithoutExtension(existingRecipe.Filename2) : DateTime.Now.ToString("yyyyMMddHHmmssfff"))
+                                                   + fileExtenstion; 
                     string filepath = Path.Combine(uploadsFolder, uniqueFileName);
                     using (FileStream fileStream = System.IO.File.Create(filepath))
                     {
@@ -177,7 +179,8 @@ namespace RecipeHub.API.Controllers
                 if (model.File3 != null)
                 {
                     string fileExtenstion = Path.GetExtension(model.File3.FileName);
-                    string uniqueFileName = existingRecipe.Filename3 + fileExtenstion;//DateTime.Now.ToString("yyyyMMddHHmmssfff");//Guid.NewGuid().ToString() + "_" + model.File3.FileName;
+                    string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename3) ? Path.GetFileNameWithoutExtension(existingRecipe.Filename3) : DateTime.Now.ToString("yyyyMMddHHmmssfff"))
+                                              + fileExtenstion;
                     string filepath = Path.Combine(uploadsFolder, uniqueFileName);
                     using (FileStream fileStream = System.IO.File.Create(filepath))
                     {
