@@ -1,0 +1,85 @@
+<form  [formGroup]="recipeForm">
+  <div class="container w-50 p-3">
+    <div class="row form-group">
+      <label class="control-label col-sm-3 font-weight-bold" for="title">Recipie Title</label>
+      <div class="col-sm-8">              
+        <input type="text" class="form-control" formControlName="title" placeholder="Enter Title"
+           id="title">
+          <small class="text-danger"
+          *ngIf="!validations.title.valid && (validations.title.dirty || validations.title.touched)">Please
+          provide recipie title!</small>
+      </div>      
+      <div class="input-group-append col-sm-1"></div>
+    </div>
+    <div class="row form-group">
+      <label class="control-label col-sm-3 font-weight-bold" for="title">Images</label>
+      <div class="col-sm-8">
+        <input type="file" class="form-control" id="image1" placeholder="Image" name="Image" (change)="handleFileInput1($event.target.files)">
+       </div>
+       <div class="input-group-append col-sm-1"></div>
+    </div>
+    <div class="row form-group">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-8">
+        <input type="file" class="form-control" id="image2" placeholder="Image2" name="Image2" (change)="handleFileInput2($event.target.files)">
+      </div>
+      <div class="input-group-append col-sm-1"></div>
+    </div>
+    <div class="row form-group">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-8">
+        <input type="file" class="form-control" id="image3" placeholder="Image" name="Image3" (change)="handleFileInput3($event.target.files)">
+      </div>
+      <div class="input-group-append col-sm-1"></div>
+    </div>
+    
+    <div class="form-group" formArrayName="recipeIngredient"> 
+      <div class="row" *ngFor="let item of ingredientList.controls; let ingredientIndex=index" [formGroupName]="ingredientIndex">
+      <label class="control-label col-sm-3 font-weight-bold"> {{ingredientIndex==0?"Ingredients":""}} </label>       
+        <div class="col-sm-8 input-group">
+          <input type="text" class="form-control"  formControlName="ingredientName" placeholder="Ingredient {{ingredientIndex+1}}"  
+          id="{{'ingredientName'+ingredientIndex +1 }}" />                  
+          <!-- <input type="hidden" formControlName="id" id="{{'id'+ingredientIndex+1 }}" >
+          <input type="hidden" formControlName="recipeId" id="{{'recipeId'+ingredientIndex+1 }}" > 
+          <small class="text-danger" *ngIf="!validations.recipeIngredient.valid && (validations.recipeIngredient.dirty || validations.recipeIngredient.touched)">Please provide Ingredients!</small>         -->
+      </div>   
+      <div class="input-group-append col-sm-1">
+        <button class="btn" (click)="addIngredient()"><i class="fa fa-plus-circle fa-2x"></i></button>
+      </div>
+    </div>  
+    </div>
+
+    
+    <div class="form-group" formArrayName="recipeStep">
+      <div class="row" *ngFor="let item of stepsList.controls; let stepIndex=index" [formGroupName]="stepIndex">
+      <label class="control-label col-sm-3 font-weight-bold" > {{stepIndex==0?"Steps":""}}</label>
+      <div class="col-sm-8 input-group">
+         <input type="text" class="form-control" formControlName="stepName"  placeholder="Step {{stepIndex+1}}"  id="{{'stepName'+stepIndex+1 }}">               
+        <small class="text-danger" *ngIf="!validations.recipeStep.valid && (validations.recipeStep.dirty || validations.recipeStep.touched)">Please provide steps!</small>
+      </div> 
+      <div class="input-group-append col-sm-1">
+        <button class="btn" (click)="addSteps()"><i class="fa fa-plus-circle fa-2x"></i></button>
+      </div>
+    </div>
+    </div>
+   
+    <div class="row form-group">
+      <label class="control-label col-sm-3 font-weight-bold" for="steps">Level</label>
+      <div class="col-sm-8">
+      <select id="levels" class="form-control " formControlName="levels" name="levels" type="text" >
+        <option value="" selected>Select Level</option>
+        <option *ngFor="let level of levelList">{{level}}</option>
+      </select>
+      <small class="text-danger"
+        *ngIf="!validations.levels.valid && (validations.levels.dirty || validations.levels.touched)">Please provide
+        level!</small>
+      </div>
+      <div class="input-group-append col-sm-1"></div>
+    </div> 
+    
+    <div class="row form-group">      
+        <button [disabled]="!(validations.levels.valid && validations.title.valid)" (click)="createUpdateRecipie()" type="button"
+          class="col-sm-11 btn btn-dark">{{ recipeId>0 ?"Update":"Create" }}</button>      
+    </div>
+  </div>
+</form>

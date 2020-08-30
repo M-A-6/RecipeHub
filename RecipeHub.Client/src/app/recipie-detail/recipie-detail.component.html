@@ -1,0 +1,119 @@
+<form [formGroup]="recipeForm" *ngIf="recipieDetail" class="editForm pg-load-animation" novalidate>
+    <div class="container">
+
+      <div class="row">
+            <div class="col-sm-2">
+            </div>
+            <div id="divRecipeDetails" class="col-sm-8 bg-secondary">
+              <div id="row1" class="row h-10 p-3">
+                <div class="col-sm-12 font-weight-bold" style="text-align: center;top: 10px;">                 
+                  <h1>{{recipeForm.controls['title'].value}}</h1>
+                </div>     
+              </div>
+               <div id="row2" class="row h-25 p-3">
+                 <div class="col-sm-3 h-100 w-100 p3">                  
+                  <img  [src]= "path + recipeForm.controls['filename1'].value" class="img  h-100 w-100 p3" alt="file1" /> 
+                 </div>                 
+                 <div class="col-sm-9">
+                  <input readonly type="text"  class="form-control" [formControl]="recipeForm.controls['levels']"  placeholder="Enter Title" name="title" />  
+                </div>
+               </div>
+
+               <div id="row3" class="row h-25 p-3">
+                <div class="col-sm-9">
+                  <textarea readonly type="text"  class="form-control h-100 p-3" [formControl]="recipeForm.controls['recipeIngredient']"  placeholder="Ingredients" ></textarea> 
+                </div>                                
+                <div class="col-sm-3 h-100 w-100 p3">                  
+                 <img  [src]= "path + recipeForm.controls['filename2'].value"  class="img h-100 w-100 p3" alt="file2" /> 
+                </div>                
+              </div>
+              <div id="row4" class="row h-25 p-3">                
+                <div class="col-sm-3">                  
+                   <img  [src]= "path + recipeForm.controls['filename3'].value" class="img-thumbnail h-100 w-100 p3" alt="file2"  /> 
+                </div>                              
+                <div class="col-sm-9">
+                  <textarea readonly type="text"  class="form-control h-100 p-3" [formControl]="recipeForm.controls['recipeStep']"  placeholder="steps" ></textarea> 
+                </div>
+              </div>
+              <div id="row5" class="row h-15 p-3">                
+                <div class="col-sm-12" style="color: white;">                  
+                   Recipe # {{recipeForm.controls['id'].value}}
+                </div>                              
+              </div>
+              
+           </div>           
+            <div class="col-sm-2">
+              <div class="row pl-2">
+                <button class="btn" (click)="editRecipe(recipeForm.controls['id'].value)"><i class="fa fa-reply fa-2x"></i></button>
+                <label class="col">edit</label>
+              </div>
+              <div class="row  pl-2">
+                <button class="btn"><i class="fa fa-floppy-o fa-2x"></i></button>
+                <span class="col">save</span>
+              </div>
+              <div class="row  pl-2">
+                <button class="btn"  title="Share As PDF" (click)="exportAsPDF('divRecipeDetails');"><i class="fa fa-file-pdf-o fa-2x"></i></button>
+                <span class="col">save as pdf</span>
+              </div>
+
+          </div>
+      </div>
+      
+      <!-- <div class="form-group">
+        <label class="control-label col-sm-2" for="title">Recipie Title:</label>
+        <div class="col-sm-10">
+          <input type="text"  class="form-control" [formControl]="recipeForm.controls['title']"  placeholder="Enter Title" name="title">
+  
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="levels">Level:</label>
+        <div class="col-sm-10">
+          <input type="text"  class="form-control" [formControl]="recipeForm.controls['levels']"  placeholder="Enter Title" name="title">
+  
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="recipeIngredient">Ingredients:</label>
+        <div class="col-sm-10">
+          <input type="text"  class="form-control" [formControl]="recipeForm.controls['recipeIngredient']" >  
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="recipeStep">Steps:</label>
+        <div class="col-sm-10">
+          <input type="text"  class="form-control" [formControl]="recipeForm.controls['recipeStep']" >  
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-4" for="id">Recipe #:</label>
+        <div class="col-sm-8">
+          <input type="text"  class="form-control" [formControl]="recipeForm.controls['id']" >  
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-4" for="filename1">File 1 #:</label>
+        <div class="col-sm-8">
+          <input type="text"  class="form-control" [formControl]="recipeForm.controls['filename1']" >  
+        </div>
+      </div>
+      
+      <a [href]="path + recipeForm.controls['filename1'].value" target="_blank" >
+      <img  [src]= "path + recipeForm.controls['filename1'].value" class="img" alt="file1" />
+    </a>
+      <br/>
+      <a [href]="path + recipeForm.controls['filename2'].value" target="_blank" >
+      <img  [src]= "path + recipeForm.controls['filename2'].value" class="img" alt="file2" />
+  </a>
+      <br/>
+      <a [href]="path + recipeForm.controls['filename3'].value" target="_blank" >
+      <img  [src]= "path + recipeForm.controls['filename3'].value" class="img" alt="file3" />
+    </a>
+     -->
+    </div>
+  </form>

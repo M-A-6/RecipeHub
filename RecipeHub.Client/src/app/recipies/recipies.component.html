@@ -1,0 +1,61 @@
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"> 
+            <select  class="form-control" 
+            (change)="getFilterByLevel($event)">
+            <option value="" selected>Sort By Level</option>
+            <option *ngFor="let lvl of levelList" value="{{lvl}}">{{lvl}}
+            </option>
+        </select>
+    </div>
+        <div class="col-sm-3">
+             <select class="form-control" (change)="getSortByDate($event)">
+            <option>Sort By Date</option>
+          <option>ASC</option>
+          <option>DESC</option>
+        </select>
+    </div>
+       
+      </div>
+      <div class="container pt-3"></div>
+    <table class="table table-striped" style="width: 100%;">
+      <thead class="thead-dark">
+        <tr>
+          <th>Id</th>
+          <th>Recipe</th>
+          <th>Image</th>
+          <th>Ingredients</th>
+          <th>Steps</th>
+          <th>Level</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let recipie of recipiesList;let i= index">
+            <th>{{recipie.id}} </th>
+            <th>{{recipie.title}}</th>
+            <th>{{recipie.filename1}}
+                {{recipie.filename2}}
+                {{recipie.filename3}}
+
+            </th>
+            <th>{{recipie.recipeIngredient}}</th>
+            <th>{{recipie.recipeStep}}</th>
+            <th>{{recipie.levels!="null"?recipie.levels:'N/A'}}</th>
+            <th>{{recipie.createdDate | date:'dd-MM-yyyy'}}</th>
+            <th>
+              <button class="btn" (click)="viewDetail(recipie)"><i class="fa fa-file-text fa-2x"></i></button>                
+            </th>
+        </tr>
+         <tr *ngIf="recipiesList?.length===0">
+           <td colspan="8"> No Record Found</td>
+         </tr>
+      </tbody>
+    </table>
+  
+  </div>
+
+
