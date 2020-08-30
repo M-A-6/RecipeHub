@@ -32,9 +32,7 @@ export class HomeComponent implements OnInit {
         levels: new FormControl(),
         recipeIngredient: new FormArray([ ]),
         recipeStep: new FormArray([ ]),    
-      });
-        (<FormArray>this.recipeForm.get('recipeIngredient')).push(this.addnewIngredient(0,'',0)),
-      (<FormArray>this.recipeForm.get('recipeStep')).push(this.addnewStep(0,'',0))
+      });       
       this.getRecipieDetail(this.recipeId);
     }
     else{       

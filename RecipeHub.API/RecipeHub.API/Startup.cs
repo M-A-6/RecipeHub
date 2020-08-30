@@ -43,11 +43,11 @@ namespace RecipeHub.API
 
             services.AddDirectoryBrowser();
 
-            services.AddDbContextPool<RecipeHubDb>(options =>
-                                               options.UseSqlServer("Server=DESKTOP-F84SMUP\\SQLEXPRESS;Initial Catalog=RECIPEHUB;Trusted_Connection=True;User ID=sa;Password=123;"));
-
             //services.AddDbContextPool<RecipeHubDb>(options =>
-            //                                   options.UseSqlServer(Configuration.GetConnectionString("ConnectionStringDB")));
+            //                                   options.UseSqlServer("Server=DESKTOP-F84SMUP\\SQLEXPRESS;Initial Catalog=RECIPEHUB;Trusted_Connection=True;User ID=sa;Password=123;"));
+
+            services.AddDbContextPool<RecipeHubDb>(options =>
+                                               options.UseSqlServer(Configuration.GetConnectionString("ConnectionStringDB")));
 
             services.AddTransient<IRecipeService, RecipeService>();
         }
@@ -61,8 +61,6 @@ namespace RecipeHub.API
             }
             app.UseCors("CorsPolicy");
             app.UseRouting();
-            //app.UseCors(option => option.WithOrigins("http://localhost:4200"));
-            
             app.UseAuthorization();
             //app.UseDefaultFiles();
            // app.UseStaticFiles();

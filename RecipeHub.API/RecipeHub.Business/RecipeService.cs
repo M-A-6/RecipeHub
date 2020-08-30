@@ -101,41 +101,40 @@ namespace RecipeHub.Business
                 this.db.SaveChanges();
             }
 
-            //foreach (var step in recipe.RecipeStep)
-            //{
-            //    if (step.Id == 0)
-            //    {
-            //        step.RecipeId = recipe.Id;
-            //        CreateRecipeStep(step);
-            //    }
-            //    else if (step.Id > 0 && step.RecipeId == 0)
-            //    {
-            //        RecipeStep restep = this.db.RecipeStep.Where(r => r.Id == step.Id).FirstOrDefault();
-            //        if (restep != null)
-            //        {
-            //            restep.StepName = step.StepName;
-            //            UpdateRecipeStep(restep);
-            //        }
-            //    }
-            //}
-            //foreach (var ingredient in recipe.RecipeIngredient)
-            //{
-            //    if (ingredient.Id == 0 && ingredient.RecipeId == 0)
-            //    {
-            //        ingredient.RecipeId = recipe.Id;
-            //        CreateRecipeIngredient(ingredient);
-            //    }
-            //    else if (ingredient.Id > 0)
-            //    {
-            //        RecipeIngredient rIngredient = this.db.RecipeIngredient.Where(r => r.Id == ingredient.Id).FirstOrDefault();
-            //        if (rIngredient != null)
-            //        {
-            //            rIngredient.IngredientName = ingredient.IngredientName;
-            //            UpdateRecipeIngredient(rIngredient);
-            //        }
-
-            //    }
-            //}
+            foreach (var step in recipe.RecipeStep)
+            {
+                if (step.Id == 0 && step.RecipeId == 0)
+                {
+                    step.RecipeId = recipe.Id;
+                    CreateRecipeStep(step);
+                }
+                else if (step.Id > 0 )
+                {
+                    RecipeStep restep = this.db.RecipeStep.Where(r => r.Id == step.Id).FirstOrDefault();
+                    if (restep != null)
+                    {
+                        restep.StepName = step.StepName;
+                        UpdateRecipeStep(restep);
+                    }
+                }
+            }
+            foreach (var ingredient in recipe.RecipeIngredient)
+            {
+                if (ingredient.Id == 0 && ingredient.RecipeId == 0)
+                {
+                    ingredient.RecipeId = recipe.Id;
+                    CreateRecipeIngredient(ingredient);
+                }
+                else if (ingredient.Id > 0)
+                {
+                    RecipeIngredient rIngredient = this.db.RecipeIngredient.Where(r => r.Id == ingredient.Id).FirstOrDefault();
+                    if (rIngredient != null)
+                    {
+                        rIngredient.IngredientName = ingredient.IngredientName;
+                        UpdateRecipeIngredient(rIngredient);
+                    }
+                }
+            }
             return recipe;
         }
 
