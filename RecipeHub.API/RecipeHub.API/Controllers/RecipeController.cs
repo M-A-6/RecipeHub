@@ -40,16 +40,50 @@ namespace RecipeHub.API.Controllers
         //[Route("api/getby")]
         public ResponseList<vmRecipe> Get(string filterLevel,  string sortByDate)
         {
-            if (string.IsNullOrEmpty(filterLevel) && sortByDate == "ASC")
-                return new ResponseList<vmRecipe>() { code = (int)HttpStatusCode.OK, message = "sort by date asc", response = this.recipeService.GetRecipes().ToList().OrderBy(d => d.CreatedDate).ToList() };
-            else if (string.IsNullOrEmpty(filterLevel) && sortByDate == "DESC")
-                return new ResponseList<vmRecipe>() { code = (int)HttpStatusCode.OK, message = "sort by date desc", response = this.recipeService.GetRecipes().ToList().OrderByDescending(d => d.CreatedDate).ToList()    };
-            else if (!string.IsNullOrEmpty(filterLevel) && sortByDate == "ASC")
-                return new ResponseList<vmRecipe>() { code = (int)HttpStatusCode.OK, message = "sort by level asc", response = this.recipeService.GetRecipes().Where(o => o.Levels==filterLevel).OrderBy(d=>d.CreatedDate).ToList() };
-            else if(!string.IsNullOrEmpty(filterLevel) && sortByDate == "DESC")
-                return new ResponseList<vmRecipe>() { code = (int)HttpStatusCode.OK, message = "sort by level desc", response = this.recipeService.GetRecipes().Where(o => o.Levels==filterLevel).OrderByDescending(d => d.CreatedDate).ToList() };
-            else
-                return new ResponseList<vmRecipe>() { code = (int)HttpStatusCode.OK, message = "recipe list", response = this.recipeService.GetRecipes().ToList() };
+            ResponseList<vmRecipe> retVal = new ResponseList<vmRecipe>()
+            {
+                code = (int)HttpStatusCode.BadRequest,
+                message = "bad request"
+            };
+            try
+            {
+                if (string.IsNullOrEmpty(filterLevel) && sortByDate == "ASC")
+                {                    
+                    retVal.response = this.recipeService.GetRecipes().ToList().OrderBy(d => d.CreatedDate).ToList();
+                    retVal.code = (int)HttpStatusCode.OK;
+                    retVal.message = "sort by date asc";
+                }
+                else if (string.IsNullOrEmpty(filterLevel) && sortByDate == "DESC")
+                {                    
+                    retVal.response = this.recipeService.GetRecipes().ToList().OrderByDescending(d => d.CreatedDate).ToList();
+                    retVal.code = (int)HttpStatusCode.OK;
+                    retVal.message = "sort by date desc";
+                }
+                else if (!string.IsNullOrEmpty(filterLevel) && sortByDate == "ASC")
+                {                    
+                    retVal.response = this.recipeService.GetRecipes().Where(o => o.Levels == filterLevel).OrderBy(d => d.CreatedDate).ToList();
+                    retVal.code = (int)HttpStatusCode.OK;
+                    retVal.message = "filter by level and sort by date asc";
+                }
+                else if (!string.IsNullOrEmpty(filterLevel) && sortByDate == "DESC")
+                {                    
+                    retVal.response = this.recipeService.GetRecipes().Where(o => o.Levels == filterLevel).OrderByDescending(d => d.CreatedDate).ToList();
+                    retVal.code = (int)HttpStatusCode.OK;
+                    retVal.message = "filter by level and sort by date desc";
+                }
+                else
+                {                    
+                    retVal.response = this.recipeService.GetRecipes().ToList();
+                    retVal.code = (int)HttpStatusCode.OK;
+                    retVal.message = "recipe list";
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal.code = (int)HttpStatusCode.InternalServerError;
+                retVal.message = "Exception" + ex.Message;
+            }
+            return retVal;
         }
     
 
@@ -57,148 +91,212 @@ namespace RecipeHub.API.Controllers
         [HttpGet("{id}")]
         public ResponseItem<vmRecipe> Get(int id)
         {
-            return new ResponseItem<vmRecipe>() { code = (int) HttpStatusCode.OK, message = "recipe Item", response = this.recipeService.GetRecipeById(id) };
+            ResponseItem<vmRecipe> retVal = new ResponseItem<vmRecipe>()
+            {
+                code = (int)HttpStatusCode.BadRequest,
+                message ="bad request"                
+            };
+            try
+            {
+                retVal.response= this.recipeService.GetRecipeById(id);
+                retVal.code = (int)HttpStatusCode.OK;
+                retVal.message = "recipe Item"; 
+                
+            } catch (Exception ex)
+            {                
+                retVal.code = (int)HttpStatusCode.InternalServerError;
+                retVal.message = "Exception" + ex.Message;
+            }
+            return retVal;
         }
 
         [HttpGet("getrecipe/{id}")]
         public ResponseItem<Recipe> GetRecipe(int id)
         {
-            return new ResponseItem<Recipe>() { code = (int)HttpStatusCode.OK, message = "recipe Item", response = this.recipeService.GetById(id) };
+            ResponseItem<Recipe> retVal = new ResponseItem<Recipe>()
+            {
+                code = (int)HttpStatusCode.BadRequest,
+                message = "bad request"
+            };
+            try
+            {
+                retVal.response = this.recipeService.GetById(id);
+                retVal.code = (int)HttpStatusCode.OK;
+                retVal.message = "recipe Item";                
+            }
+            catch (Exception ex)
+            {
+                retVal.code = (int)HttpStatusCode.InternalServerError;
+                retVal.message = "Exception" + ex.Message;
+            }
+            return retVal;
         }
 
         // POST api/<RecipeController>
         [HttpPost]
         public ResponseItem<Recipe> Post([FromForm] vmRecipeRequest model)
         {
-            if (ModelState.IsValid)
+            ResponseItem<Recipe> retVal = new ResponseItem<Recipe>()
             {
-                Recipe recipe = new Recipe(); 
-                recipe.Title = model.Title;
-                recipe.CreatedDate = DateTime.Now;
-                recipe.Levels = model.Levels;
+                code = (int)HttpStatusCode.BadRequest,
+                message = "bad request"
+            };
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    Recipe recipe = new Recipe();
+                    recipe.Title = model.Title;
+                    recipe.CreatedDate = DateTime.Now;
+                    recipe.Levels = model.Levels;
 
-                recipe.RecipeStep = JsonConvert.DeserializeObject<List<RecipeStep>>(model.RecipeStep);
-                recipe.RecipeIngredient = JsonConvert.DeserializeObject<List<RecipeIngredient>>(model.RecipeIngredient);
-                               
-                if (!Directory.Exists(webHostEnvironment.ContentRootPath + "\\Upload\\"))
-                {
-                    Directory.CreateDirectory(webHostEnvironment.ContentRootPath + "\\Upload\\");
-                };
-                string uploadsFolder = Path.Combine(webHostEnvironment.ContentRootPath, "Upload");
-                if (model.File1 != null)
-                {
-                    string fileExtenstion = Path.GetExtension(model.File1.FileName);
-                    string uniqueFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff")+ fileExtenstion; //Guid.NewGuid().ToString() + "_" + model.File1.FileName;
-                    string filepath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (FileStream fileStream = System.IO.File.Create(filepath))
-                    {
-                        model.File1.CopyTo(fileStream);
-                        fileStream.Flush();
-                        recipe.Filename1 = uniqueFileName ;
-                    }
-                }
-                if (model.File2 != null)
-                {
-                    string fileExtenstion = Path.GetExtension(model.File2.FileName);
-                    string uniqueFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + fileExtenstion;  //Guid.NewGuid().ToString() + "_" + model.File2.FileName;
-                    string filepath = Path.Combine(uploadsFolder, uniqueFileName );
-                    using (FileStream fileStream = System.IO.File.Create(filepath))
-                    {
-                        model.File2.CopyTo(fileStream);
-                        fileStream.Flush();
-                        recipe.Filename2 = uniqueFileName;
-                    }
+                    recipe.RecipeStep = JsonConvert.DeserializeObject<List<RecipeStep>>(model.RecipeStep);
+                    recipe.RecipeIngredient = JsonConvert.DeserializeObject<List<RecipeIngredient>>(model.RecipeIngredient);
 
-                }
-                if (model.File3 != null)
-                {
-                    string fileExtenstion = Path.GetExtension(model.File3.FileName);
-                    string uniqueFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + fileExtenstion;//Guid.NewGuid().ToString() + "_" + model.File3.FileName;
-                    string filepath = Path.Combine(uploadsFolder, uniqueFileName );
-                    using (FileStream fileStream = System.IO.File.Create(filepath))
+                    if (!Directory.Exists(webHostEnvironment.ContentRootPath + "\\Upload\\"))
                     {
-                        model.File3.CopyTo(fileStream);
-                        fileStream.Flush();
-                        recipe.Filename3 = uniqueFileName;
+                        Directory.CreateDirectory(webHostEnvironment.ContentRootPath + "\\Upload\\");
+                    };
+                    string uploadsFolder = Path.Combine(webHostEnvironment.ContentRootPath, "Upload");
+                    if (model.File1 != null)
+                    {
+                        string fileExtenstion = Path.GetExtension(model.File1.FileName);
+                        string uniqueFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + fileExtenstion; //Guid.NewGuid().ToString() + "_" + model.File1.FileName;
+                        string filepath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (FileStream fileStream = System.IO.File.Create(filepath))
+                        {
+                            model.File1.CopyTo(fileStream);
+                            fileStream.Flush();
+                            recipe.Filename1 = uniqueFileName;
+                        }
                     }
+                    if (model.File2 != null)
+                    {
+                        string fileExtenstion = Path.GetExtension(model.File2.FileName);
+                        string uniqueFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + fileExtenstion;  //Guid.NewGuid().ToString() + "_" + model.File2.FileName;
+                        string filepath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (FileStream fileStream = System.IO.File.Create(filepath))
+                        {
+                            model.File2.CopyTo(fileStream);
+                            fileStream.Flush();
+                            recipe.Filename2 = uniqueFileName;
+                        }
 
+                    }
+                    if (model.File3 != null)
+                    {
+                        string fileExtenstion = Path.GetExtension(model.File3.FileName);
+                        string uniqueFileName = DateTime.Now.ToString("yyyyMMddHHmmssfff") + fileExtenstion;//Guid.NewGuid().ToString() + "_" + model.File3.FileName;
+                        string filepath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (FileStream fileStream = System.IO.File.Create(filepath))
+                        {
+                            model.File3.CopyTo(fileStream);
+                            fileStream.Flush();
+                            recipe.Filename3 = uniqueFileName;
+                        }
+
+                    }
+                   retVal.response = this.recipeService.CreateRecipe(recipe);
+                   retVal.code = (int)HttpStatusCode.Created;
+                   retVal.message = "recipe Item";
                 }
-                return new ResponseItem<Recipe>() { code = (int)HttpStatusCode.Created, message = "recipe Item", response = this.recipeService.CreateRecipe(recipe) };
+                else
+                {
+                    
+                    retVal.code = (int)HttpStatusCode.BadRequest;
+                    retVal.message = "invalid form";                    
+                }
             }
-            else
-            { 
-                return new ResponseItem<Recipe>() { code = (int)HttpStatusCode.BadRequest, message = "recipe Item", response = null };
+            catch (Exception ex)
+            {
+                retVal.code = (int)HttpStatusCode.InternalServerError;
+                retVal.message = "Exception" + ex.Message;
             }
+            return retVal;
         }
 
         // PUT api/<RecipeController>/5
         [HttpPut("{id}")]
         public ResponseItem<Recipe> Put(int id, [FromForm] vmRecipeRequest model)
         {
-            Recipe existingRecipe = this.recipeService.GetById(id);
-            if (existingRecipe != null)
+            ResponseItem<Recipe> retVal = new ResponseItem<Recipe>()
             {
-                existingRecipe.RecipeStep = JsonConvert.DeserializeObject<List<RecipeStep>>(model.RecipeStep);
-                existingRecipe.RecipeIngredient = JsonConvert.DeserializeObject<List<RecipeIngredient>>(model.RecipeIngredient);   
-                existingRecipe.Title = model.Title;
-                existingRecipe.Levels = model.Levels;
-                //recipe.CreatedDate = DateTime.Now;
-
-                if (!Directory.Exists(webHostEnvironment.ContentRootPath + "\\Upload\\"))
-                {
-                    Directory.CreateDirectory(webHostEnvironment.ContentRootPath + "\\Upload\\");
-                };
-                string uploadsFolder = Path.Combine(webHostEnvironment.ContentRootPath, "Upload");
-                if (model.File1 != null)
-                {
-                    string fileExtenstion = Path.GetExtension(model.File1.FileName);
-                    string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename1) ?  Path.GetFileNameWithoutExtension(existingRecipe.Filename1): DateTime.Now.ToString("yyyyMMddHHmmssfff")) 
-                                              + fileExtenstion;
-                    string filepath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (FileStream fileStream = System.IO.File.Create(filepath))
-                    {
-                        model.File1.CopyTo(fileStream);
-                        fileStream.Flush();
-                        existingRecipe.Filename1 = uniqueFileName;
-                    }
-                }
-                if (model.File2 != null)
-                {
-                    string fileExtenstion = Path.GetExtension(model.File2.FileName);
-                    string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename2) ? Path.GetFileNameWithoutExtension(existingRecipe.Filename2) : DateTime.Now.ToString("yyyyMMddHHmmssfff"))
-                                                   + fileExtenstion; 
-                    string filepath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (FileStream fileStream = System.IO.File.Create(filepath))
-                    {
-                        model.File2.CopyTo(fileStream);
-                        fileStream.Flush();
-                        existingRecipe.Filename2 = uniqueFileName;
-                    }
-
-                }
-                if (model.File3 != null)
-                {
-                    string fileExtenstion = Path.GetExtension(model.File3.FileName);
-                    string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename3) ? Path.GetFileNameWithoutExtension(existingRecipe.Filename3) : DateTime.Now.ToString("yyyyMMddHHmmssfff"))
-                                              + fileExtenstion;
-                    string filepath = Path.Combine(uploadsFolder, uniqueFileName);
-                    using (FileStream fileStream = System.IO.File.Create(filepath))
-                    {
-                        model.File3.CopyTo(fileStream);
-                        fileStream.Flush();
-                        existingRecipe.Filename3 = uniqueFileName;
-                    }
-
-                }
-
-                return new ResponseItem<Recipe>() { code = (int)HttpStatusCode.OK, message = "recipe Item", response = this.recipeService.UpdateRecipe(existingRecipe) };
-            }
-            else
+                code = (int)HttpStatusCode.BadRequest,
+                message = "bad request"
+            };
+            try
             {
-                return new ResponseItem<Recipe>() { code = (int)HttpStatusCode.NotFound, message = "recipe Item", response = null };
+                Recipe existingRecipe = this.recipeService.GetById(id);
+                if (existingRecipe != null)
+                {
+                    existingRecipe.RecipeStep = JsonConvert.DeserializeObject<List<RecipeStep>>(model.RecipeStep);
+                    existingRecipe.RecipeIngredient = JsonConvert.DeserializeObject<List<RecipeIngredient>>(model.RecipeIngredient);
+                    existingRecipe.Title = model.Title;
+                    existingRecipe.Levels = model.Levels;
+                    //recipe.CreatedDate = DateTime.Now;
 
+                    if (!Directory.Exists(webHostEnvironment.ContentRootPath + "\\Upload\\"))
+                    {
+                        Directory.CreateDirectory(webHostEnvironment.ContentRootPath + "\\Upload\\");
+                    };
+                    string uploadsFolder = Path.Combine(webHostEnvironment.ContentRootPath, "Upload");
+                    if (model.File1 != null)
+                    {
+                        string fileExtenstion = Path.GetExtension(model.File1.FileName);
+                        string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename1) ? Path.GetFileNameWithoutExtension(existingRecipe.Filename1) : DateTime.Now.ToString("yyyyMMddHHmmssfff"))
+                                                  + fileExtenstion;
+                        string filepath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (FileStream fileStream = System.IO.File.Create(filepath))
+                        {
+                            model.File1.CopyTo(fileStream);
+                            fileStream.Flush();
+                            existingRecipe.Filename1 = uniqueFileName;
+                        }
+                    }
+                    if (model.File2 != null)
+                    {
+                        string fileExtenstion = Path.GetExtension(model.File2.FileName);
+                        string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename2) ? Path.GetFileNameWithoutExtension(existingRecipe.Filename2) : DateTime.Now.ToString("yyyyMMddHHmmssfff"))
+                                                       + fileExtenstion;
+                        string filepath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (FileStream fileStream = System.IO.File.Create(filepath))
+                        {
+                            model.File2.CopyTo(fileStream);
+                            fileStream.Flush();
+                            existingRecipe.Filename2 = uniqueFileName;
+                        }
+
+                    }
+                    if (model.File3 != null)
+                    {
+                        string fileExtenstion = Path.GetExtension(model.File3.FileName);
+                        string uniqueFileName = (!string.IsNullOrEmpty(existingRecipe.Filename3) ? Path.GetFileNameWithoutExtension(existingRecipe.Filename3) : DateTime.Now.ToString("yyyyMMddHHmmssfff"))
+                                                  + fileExtenstion;
+                        string filepath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (FileStream fileStream = System.IO.File.Create(filepath))
+                        {
+                            model.File3.CopyTo(fileStream);
+                            fileStream.Flush();
+                            existingRecipe.Filename3 = uniqueFileName;
+                        }
+
+                    }
+                    retVal.response = this.recipeService.UpdateRecipe(existingRecipe);
+                    retVal.code = (int)HttpStatusCode.OK;
+                    retVal.message = "recipe Item";
+                }
+                else
+                {
+                    retVal.code = (int)HttpStatusCode.NotFound; 
+                    retVal.message = "recipe Item";
+                }
             }
-
+            catch (Exception ex)
+            {
+                retVal.code = (int)HttpStatusCode.InternalServerError;
+                retVal.message = "Exception" + ex.Message;
+            }
+            return retVal;
         }
 
         // DELETE api/<RecipeController>/5
@@ -207,9 +305,27 @@ namespace RecipeHub.API.Controllers
         {
         }
         [HttpGet("seeding/{id}")]
-        public void Seeding(int id)
+        public ResponseResult Seeding(int id)
         {
-            this.recipeService.Seeding(id);
+            ResponseResult retVal = new ResponseResult()
+            {
+                code = (int)HttpStatusCode.BadRequest,
+                message = "bad request",
+                response = "false"
+                
+            };
+            try
+            {
+                this.recipeService.Seeding(id);
+                retVal.code = (int)HttpStatusCode.OK;
+                retVal.response = "true";
+            }
+            catch (Exception ex)
+            {
+                retVal.code = (int)HttpStatusCode.InternalServerError;
+                retVal.message = "Exception" + ex.Message;
+            }
+            return retVal;
         }
     }
 }
