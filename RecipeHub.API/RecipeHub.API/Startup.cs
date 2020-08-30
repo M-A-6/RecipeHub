@@ -48,7 +48,7 @@ namespace RecipeHub.API
 
             //services.AddDbContextPool<RecipeHubDb>(options =>
             //                                   options.UseSqlServer(Configuration.GetConnectionString("ConnectionStringDB")));
-         
+
             services.AddTransient<IRecipeService, RecipeService>();
         }
 

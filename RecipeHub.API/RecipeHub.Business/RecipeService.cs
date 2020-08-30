@@ -78,13 +78,64 @@ namespace RecipeHub.Business
         }
         public Recipe UpdateRecipe(Recipe recipe)
         {
-            this.db.Attach(recipe);
-            this.db.Attach(recipe.RecipeStep);
-            this.db.Attach(recipe.RecipeIngredient);
-            this.db.Entry(recipe).State = EntityState.Modified;
-            this.db.Entry(recipe.RecipeStep).State = EntityState.Modified;
-            this.db.Entry(recipe.RecipeIngredient).State = EntityState.Modified;
-            this.db.SaveChanges();
+            Recipe existingRecipe= this.db.Recipe.Where(r => r.Id == recipe.Id).FirstOrDefault();
+            if (existingRecipe != null)
+            {
+                existingRecipe.Title = recipe.Title;
+                existingRecipe.Levels = recipe.Levels;
+
+                if (recipe.Filename1 != "")
+                {
+                    existingRecipe.Filename1 = recipe.Filename1;
+                }
+                if (recipe.Filename2 != "")
+                {
+                    existingRecipe.Filename2 = recipe.Filename2;
+                }
+                if (recipe.Filename3 != "")
+                {
+                    existingRecipe.Filename3 = recipe.Filename3;
+                }
+                this.db.Attach(existingRecipe);
+                this.db.Entry(existingRecipe).State = EntityState.Modified;
+                this.db.SaveChanges();
+            }
+
+            //foreach (var step in recipe.RecipeStep)
+            //{
+            //    if (step.Id == 0)
+            //    {
+            //        step.RecipeId = recipe.Id;
+            //        CreateRecipeStep(step);
+            //    }
+            //    else if (step.Id > 0 && step.RecipeId == 0)
+            //    {
+            //        RecipeStep restep = this.db.RecipeStep.Where(r => r.Id == step.Id).FirstOrDefault();
+            //        if (restep != null)
+            //        {
+            //            restep.StepName = step.StepName;
+            //            UpdateRecipeStep(restep);
+            //        }
+            //    }
+            //}
+            //foreach (var ingredient in recipe.RecipeIngredient)
+            //{
+            //    if (ingredient.Id == 0 && ingredient.RecipeId == 0)
+            //    {
+            //        ingredient.RecipeId = recipe.Id;
+            //        CreateRecipeIngredient(ingredient);
+            //    }
+            //    else if (ingredient.Id > 0)
+            //    {
+            //        RecipeIngredient rIngredient = this.db.RecipeIngredient.Where(r => r.Id == ingredient.Id).FirstOrDefault();
+            //        if (rIngredient != null)
+            //        {
+            //            rIngredient.IngredientName = ingredient.IngredientName;
+            //            UpdateRecipeIngredient(rIngredient);
+            //        }
+
+            //    }
+            //}
             return recipe;
         }
 
@@ -94,6 +145,19 @@ namespace RecipeHub.Business
             this.db.Entry(recipeStep).State = EntityState.Modified;
             this.db.SaveChanges();
             return recipeStep;
+        }
+        public RecipeStep CreateRecipeStep(RecipeStep recipeStep)
+        {
+            this.db.Add(recipeStep);            
+            this.db.SaveChanges();
+            return recipeStep;
+        }
+
+        public RecipeIngredient CreateRecipeIngredient(RecipeIngredient recipeIngredient)
+        {
+            this.db.Add(recipeIngredient);         
+            this.db.SaveChanges();
+            return recipeIngredient;
         }
         public RecipeIngredient UpdateRecipeIngredient(RecipeIngredient recipeIngredient)
         {
