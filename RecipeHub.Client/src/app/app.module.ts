@@ -10,6 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { RecipieDetailComponent } from './recipie-detail/recipie-detail.component';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { RecipieDetailComponent } from './recipie-detail/recipie-detail.componen
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
-    FormsModule      
+    FormsModule,
+    NgxPaginationModule      
   ],
   providers: [RecipeService],
   bootstrap: [AppComponent]

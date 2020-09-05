@@ -5,7 +5,7 @@
         <div class="col-sm-3"> 
             <select  class="form-control" 
             (change)="getFilterByLevel($event)">
-            <option value="" selected>Sort By Level</option>
+            <option value="" selected>Filter By Level</option>
             <option *ngFor="let lvl of levelList" value="{{lvl}}">{{lvl}}
             </option>
         </select>
@@ -18,14 +18,23 @@
         </select>
     </div>
        
-      </div>
+        <div class="col-sm-3 justify-content-end">
+          <select class="form-control" (change)="getPageSize($event)">
+         <option value="20" selected>Page Size</option>
+       <option value="25">25</option>
+       <option value="50">50</option>
+       <option value="75">75</option>
+       <option value="100">100</option>
+     </select>
+       </div>
+    
       <div class="container pt-3"></div>
     <table class="table table-striped" style="width: 100%;">
       <thead class="thead-dark">
         <tr>
           <th>Id</th>
           <th>Recipe</th>
-          <th>Image</th>
+          <!-- <th>Image</th> -->
           <th>Ingredients</th>
           <th>Steps</th>
           <th>Level</th>
@@ -34,14 +43,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let recipie of recipiesList;let i= index">
+        <tr *ngFor="let recipie of recipiesList | paginate: { id: 'recipepagination',
+        itemsPerPage: pageSize,
+        currentPage: page,
+        totalItems: totalRecords }; let i= index">
             <th>{{recipie.id}} </th>
             <th>{{recipie.title}}</th>
-            <th>{{recipie.filename1}}
+            <!-- <th>{{recipie.filename1}}
                 {{recipie.filename2}}
                 {{recipie.filename3}}
 
-            </th>
+            </th> -->
             <th>{{recipie.recipeIngredient}}</th>
             <th>{{recipie.recipeStep}}</th>
             <th>{{recipie.levels!="null"?recipie.levels:'N/A'}}</th>
@@ -52,8 +64,30 @@
         </tr>
          <tr *ngIf="recipiesList?.length===0">
            <td colspan="8"> No Record Found</td>
-         </tr>
+         </tr>         
       </tbody>
+      <tfoot>
+        <tr>
+            <th scope="row"></th>
+            <td colspan="7">
+              <div class="justify-content-end">
+              <pagination-controls  id="recipepagination"
+                      (pageChange)="pageChanged($event)"
+                      (pageBoundsCorrection)="pageChanged($event)"
+                      maxSize="9"
+                      directionLinks="true"
+                      autoHide="true"
+                      responsive="true"
+                      previousLabel="Previous"
+                      nextLabel="Next"
+                      screenReaderPaginationLabel="Pagination"
+                      screenReaderPageLabel="page"
+                      screenReaderCurrentLabel="You're on page">
+               </pagination-controls>
+              </div> 
+          </td>
+        </tr>
+    </tfoot>
     </table>
   
   </div>

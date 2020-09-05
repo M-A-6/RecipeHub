@@ -17,10 +17,12 @@ namespace RecipeHub.Business
         {
             this.db = dbContext;
         }
-
-        public IQueryable<vmRecipe> GetRecipes()
+        public IQueryable<Recipe> GetRecipes() {
+            return this.db.Recipe;
+        }
+        public IQueryable<vmRecipe> GetRecipes(int page=1,int pageSize=20)
         {
-            var partialResult = (from r in this.db.Recipe
+            var partialResult = (from r in this.db.Recipe.Page(page, pageSize)
                                  select new vmRecipe
                                  {
                                      Id = r.Id,

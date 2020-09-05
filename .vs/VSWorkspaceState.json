@@ -1,6 +1,16 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\RecipeHub.API",
+    "\\RecipeHub.API\\RecipeHub.API",
+    "\\RecipeHub.API\\RecipeHub.API\\Controllers",
+    "\\RecipeHub.API\\RecipeHub.Business",
+    "\\RecipeHub.Client",
+    "\\RecipeHub.Client\\src",
+    "\\RecipeHub.Client\\src\\app",
+    "\\RecipeHub.Client\\src\\app\\home",
+    "\\RecipeHub.Client\\src\\environments"
   ],
+  "SelectedNode": "\\RecipeHub.Client\\src\\app\\home\\home.component.ts",
   "PreviewInSolutionExplorer": false
 }

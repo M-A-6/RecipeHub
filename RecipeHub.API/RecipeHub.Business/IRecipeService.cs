@@ -7,7 +7,8 @@ namespace RecipeHub.Business
 {
     public interface IRecipeService
     {
-        IQueryable<vmRecipe> GetRecipes();
+        IQueryable<Recipe> GetRecipes();
+        IQueryable<vmRecipe> GetRecipes(int page, int pageSize);
         vmRecipe GetRecipeById(int id);
         Recipe GetById(int id);
         Recipe CreateRecipe(Recipe recipe);

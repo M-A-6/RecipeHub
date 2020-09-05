@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using RecipeHub.Business;
 using RecipeHub.Data;
 
@@ -50,6 +51,11 @@ namespace RecipeHub.API
                                                options.UseSqlServer(Configuration.GetConnectionString("ConnectionStringDB")));
 
             services.AddTransient<IRecipeService, RecipeService>();
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "RecipeHub", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,6 +94,13 @@ namespace RecipeHub.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "RecipeHub");
+                c.RoutePrefix = string.Empty;
             });
         }
     }

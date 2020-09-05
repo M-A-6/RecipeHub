@@ -38,42 +38,48 @@ namespace RecipeHub.API.Controllers
         //}
         //[HttpGet]
         //[Route("api/getby")]
-        public ResponseList<vmRecipe> Get(string filterLevel,  string sortByDate)
+        public IActionResult Get(string filterLevel,  string sortByDate, int page=1, int pageSize=20)
         {
             ResponseList<vmRecipe> retVal = new ResponseList<vmRecipe>()
             {
                 code = (int)HttpStatusCode.BadRequest,
-                message = "bad request"
+                message = "bad request",
+                count = 0
             };
             try
             {
                 if (string.IsNullOrEmpty(filterLevel) && sortByDate == "ASC")
-                {                    
-                    retVal.response = this.recipeService.GetRecipes().ToList().OrderBy(d => d.CreatedDate).ToList();
+                {
+                    retVal.count = this.recipeService.GetRecipes().Count();
+                    retVal.response = this.recipeService.GetRecipes(page, pageSize).ToList().OrderBy(d => d.CreatedDate).ToList();
                     retVal.code = (int)HttpStatusCode.OK;
                     retVal.message = "sort by date asc";
                 }
                 else if (string.IsNullOrEmpty(filterLevel) && sortByDate == "DESC")
-                {                    
-                    retVal.response = this.recipeService.GetRecipes().ToList().OrderByDescending(d => d.CreatedDate).ToList();
+                {
+                    retVal.count = this.recipeService.GetRecipes().Count();
+                    retVal.response = this.recipeService.GetRecipes(page, pageSize).ToList().OrderByDescending(d => d.CreatedDate).ToList();
                     retVal.code = (int)HttpStatusCode.OK;
                     retVal.message = "sort by date desc";
                 }
                 else if (!string.IsNullOrEmpty(filterLevel) && sortByDate == "ASC")
-                {                    
-                    retVal.response = this.recipeService.GetRecipes().Where(o => o.Levels == filterLevel).OrderBy(d => d.CreatedDate).ToList();
+                {
+                    retVal.count = this.recipeService.GetRecipes().Where(o => o.Levels == filterLevel).Count();
+                    retVal.response = this.recipeService.GetRecipes(page, pageSize).Where(o => o.Levels == filterLevel).OrderBy(d => d.CreatedDate).ToList();
                     retVal.code = (int)HttpStatusCode.OK;
                     retVal.message = "filter by level and sort by date asc";
                 }
                 else if (!string.IsNullOrEmpty(filterLevel) && sortByDate == "DESC")
-                {                    
-                    retVal.response = this.recipeService.GetRecipes().Where(o => o.Levels == filterLevel).OrderByDescending(d => d.CreatedDate).ToList();
+                {
+                    retVal.count = this.recipeService.GetRecipes().Where(o => o.Levels == filterLevel).Count();
+                    retVal.response = this.recipeService.GetRecipes(page, pageSize).Where(o => o.Levels == filterLevel).OrderByDescending(d => d.CreatedDate).ToList();
                     retVal.code = (int)HttpStatusCode.OK;
                     retVal.message = "filter by level and sort by date desc";
                 }
                 else
-                {                    
-                    retVal.response = this.recipeService.GetRecipes().ToList();
+                {
+                    retVal.count = this.recipeService.GetRecipes().Count();
+                    retVal.response = this.recipeService.GetRecipes(page,pageSize).ToList();
                     retVal.code = (int)HttpStatusCode.OK;
                     retVal.message = "recipe list";
                 }
@@ -83,7 +89,7 @@ namespace RecipeHub.API.Controllers
                 retVal.code = (int)HttpStatusCode.InternalServerError;
                 retVal.message = "Exception" + ex.Message;
             }
-            return retVal;
+            return Ok(retVal);
         }
     
 
@@ -111,7 +117,7 @@ namespace RecipeHub.API.Controllers
         }
 
         [HttpGet("getrecipe/{id}")]
-        public ResponseItem<Recipe> GetRecipe(int id)
+        public IActionResult GetRecipe(int id)
         {
             ResponseItem<Recipe> retVal = new ResponseItem<Recipe>()
             {
@@ -129,12 +135,12 @@ namespace RecipeHub.API.Controllers
                 retVal.code = (int)HttpStatusCode.InternalServerError;
                 retVal.message = "Exception" + ex.Message;
             }
-            return retVal;
+            return Ok(retVal);
         }
 
         // POST api/<RecipeController>
         [HttpPost]
-        public ResponseItem<Recipe> Post([FromForm] vmRecipeRequest model)
+        public IActionResult Post([FromForm] vmRecipeRequest model)
         {
             ResponseItem<Recipe> retVal = new ResponseItem<Recipe>()
             {
@@ -196,15 +202,15 @@ namespace RecipeHub.API.Controllers
                         }
 
                     }
-                   retVal.response = this.recipeService.CreateRecipe(recipe);
-                   retVal.code = (int)HttpStatusCode.Created;
-                   retVal.message = "recipe Item";
+                    retVal.response = this.recipeService.CreateRecipe(recipe);
+                    retVal.code = (int)HttpStatusCode.Created;
+                    retVal.message = "recipe Item";
                 }
                 else
                 {
-                    
+
                     retVal.code = (int)HttpStatusCode.BadRequest;
-                    retVal.message = "invalid form";                    
+                    retVal.message = "invalid form";
                 }
             }
             catch (Exception ex)
@@ -212,12 +218,12 @@ namespace RecipeHub.API.Controllers
                 retVal.code = (int)HttpStatusCode.InternalServerError;
                 retVal.message = "Exception" + ex.Message;
             }
-            return retVal;
+            return Ok(retVal);            
         }
 
         // PUT api/<RecipeController>/5
         [HttpPut("{id}")]
-        public ResponseItem<Recipe> Put(int id, [FromForm] vmRecipeRequest model)
+        public IActionResult Put(int id, [FromForm] vmRecipeRequest model)
         {
             ResponseItem<Recipe> retVal = new ResponseItem<Recipe>()
             {
@@ -265,7 +271,6 @@ namespace RecipeHub.API.Controllers
                             fileStream.Flush();
                             existingRecipe.Filename2 = uniqueFileName;
                         }
-
                     }
                     if (model.File3 != null)
                     {
@@ -279,7 +284,6 @@ namespace RecipeHub.API.Controllers
                             fileStream.Flush();
                             existingRecipe.Filename3 = uniqueFileName;
                         }
-
                     }
                     retVal.response = this.recipeService.UpdateRecipe(existingRecipe);
                     retVal.code = (int)HttpStatusCode.OK;
@@ -296,7 +300,7 @@ namespace RecipeHub.API.Controllers
                 retVal.code = (int)HttpStatusCode.InternalServerError;
                 retVal.message = "Exception" + ex.Message;
             }
-            return retVal;
+            return Ok(retVal);
         }
 
         // DELETE api/<RecipeController>/5
@@ -311,8 +315,7 @@ namespace RecipeHub.API.Controllers
             {
                 code = (int)HttpStatusCode.BadRequest,
                 message = "bad request",
-                response = "false"
-                
+                response = "false"                
             };
             try
             {
